@@ -6,7 +6,9 @@ import Shopcar from './components/tabbar/Shopcar.vue'
 import Search from './components/tabbar/Search.vue'
 import NewsList from './components/news/NewsList.vue'
 import Newsinfo from './components/news/Newsinfo.vue'
-
+import PhotoList from './components/photos/PhotoList.vue'
+import PhotoInfo from './components/photos/PhotoInfo.vue'
+import GoodsList from './components/goods/GoodsList.vue'
 
 var router = new VueRouter({
     routes: [
@@ -17,6 +19,9 @@ var router = new VueRouter({
         {path:'/search', component: Search},
         {path:'/home/newslist', component: NewsList},
         {path:'/home/newsinfo/:id', component: Newsinfo},
+        { path: '/home/photolist', component: PhotoList },
+        { path: '/home/photoinfo/:id', component: PhotoInfo },
+        { path: '/home/goodslist', component: GoodsList }
     ],
     linkActiveClass: 'mui-active'//覆盖默认的路由高亮类，默认类router-link-active
 })
