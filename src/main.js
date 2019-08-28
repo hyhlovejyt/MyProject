@@ -6,6 +6,108 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
+
+var car = JSON.parse(localStorage.getItem('car') || '[]')
+var store = new Vuex.Store({
+  state:{
+    //将购物车中的商品数据用一个数组存储起来 {id: 商品id, count: 购买数量, price: 单价, selected: true}
+    car: car
+  },
+  mutations:{
+    addToCar(state, goodsinfo){
+      var flag = false
+
+      state.car.some(item => {
+        //在购物中已经有了对应的商品则只需更新数量
+        if(item.id == goodsinfo.id){
+          item.count += parseInt(goodsinfo.count)
+          flag = true
+          return true
+        }
+      })
+
+      //当没有对应商品则添加商品
+      if(!flag){
+        state.car.push(goodsinfo)
+      }
+
+      //数据暂存在本地
+      localStorage.setItem('car', JSON.stringify(state.car))
+    },
+    updateGoodsInfo(state, goodsinfo) {
+      // 修改购物车中商品的数量值
+      state.car.some(item => {
+        if (item.id == goodsinfo.id) {
+          item.count = parseInt(goodsinfo.count)
+          return true
+        }
+      })
+      // 当修改完商品的数量，把最新的购物车数据，保存到 本地存储中
+      localStorage.setItem('car', JSON.stringify(state.car))
+    },
+    removeFormCar(state, id) {
+      // 根据Id，从store 中的购物车中删除对应的那条商品数据
+      state.car.some((item, i) => {
+        if (item.id == id) {
+          state.car.splice(i, 1)
+          return true;
+        }
+      })
+      // 将删除完毕后的，最新的购物车数据，同步到 本地存储中
+      localStorage.setItem('car', JSON.stringify(state.car))
+    },
+    updateGoodsSelected(state, info) {
+      state.car.some(item => {
+        if (item.id == info.id) {
+          item.selected = info.selected
+        }
+      })
+      // 把最新的 所有购物车商品的状态保存到 store 中去
+      localStorage.setItem('car', JSON.stringify(state.car))
+    }
+  },
+  getters:{
+    getAllCount(state){
+      var c = 0;
+      state.car.forEach(item => {
+        c += item.count
+      })
+      return c
+    },
+    getGoodsCount(state) {
+      var o = {}
+      state.car.forEach(item => {
+        o[item.id] = item.count
+      })
+      return o
+    },
+    getGoodsSelected(state) {
+      var o = {}
+      state.car.forEach(item => {
+        o[item.id] = item.selected
+      })
+      return o
+    },
+    getGoodsCountAndAmount(state) {
+      var o = {
+        count: 0, // 勾选的数量
+        amount: 0 // 勾选的总价
+      }
+      state.car.forEach(item => {
+        if (item.selected) {
+          o.count += item.count
+          o.amount += item.price * item.count
+        }
+      })
+      return o
+    }
+  }
+})
+
+
 // 导入格式化时间的插件
 import moment from 'moment'
 // 定义全局的过滤器
@@ -55,5 +157,6 @@ import app from './App.vue'
 var vm = new Vue({
     el: '#app',
     render: c =>c (app),
-    router  //1.4挂载路由
+    router,  //1.4挂载路由
+    store
 })
